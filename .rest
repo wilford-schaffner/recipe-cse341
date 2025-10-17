@@ -1,0 +1,113 @@
+### URL's
+@local = http://localhost:3000/
+@production = https://recipe-cse341.onrender.com/
+
+### Test 1: Get all recipes
+GET {{local}}recipes/
+GET {{production}}recipes/
+
+### Test 2: Get recipe by ID
+GET {{local}}recipes/507f1f77bcf86cd799439011
+GET {{production}}recipes/507f1f77bcf86cd799439011
+
+### Test 3: Create new recipe
+POST {{local}}recipes/
+Content-Type: application/json
+
+{
+  "name": "Test Recipe",
+  "servings": 4,
+  "prepMinutes": 10,
+  "cookMinutes": 20,
+  "ingredients": [
+    {
+      "item": "flour",
+      "quantity": "2 cups",
+      "notes": "",
+      "optional": false
+    }
+  ],
+  "steps": [
+    "Mix ingredients",
+    "Cook for 20 minutes"
+  ]
+}
+
+POST {{production}}recipes/
+Content-Type: application/json
+
+{
+  "name": "Test Recipe",
+  "servings": 4,
+  "prepMinutes": 10,
+  "cookMinutes": 20,
+  "ingredients": [
+    {
+      "item": "flour",
+      "quantity": "2 cups",
+      "notes": "",
+      "optional": false
+    }
+  ],
+  "steps": [
+    "Mix ingredients",
+    "Cook for 20 minutes"
+  ]
+}
+
+### Test 4: Update recipe
+PUT {{local}}recipes/507f1f77bcf86cd799439011
+Content-Type: application/json
+
+{
+  "name": "Updated Recipe",
+  "servings": 6,
+  "prepMinutes": 15,
+  "cookMinutes": 25,
+  "ingredients": [
+    {
+      "item": "flour",
+      "quantity": "3 cups",
+      "notes": "",
+      "optional": false
+    }
+  ],
+  "steps": [
+    "Mix ingredients",
+    "Cook for 25 minutes"
+  ]
+}
+
+PUT {{production}}recipes/507f1f77bcf86cd799439011
+Content-Type: application/json
+
+{
+  "name": "Updated Recipe",
+  "servings": 6,
+  "prepMinutes": 15,
+  "cookMinutes": 25,
+  "ingredients": [
+    {
+      "item": "flour",
+      "quantity": "3 cups",
+      "notes": "",
+      "optional": false
+    }
+  ],
+  "steps": [
+    "Mix ingredients",
+    "Cook for 25 minutes"
+  ]
+}
+
+### Test 5: Delete recipe
+DELETE {{local}}recipes/507f1f77bcf86cd799439011
+DELETE {{production}}recipes/507f1f77bcf86cd799439011
+
+### Test 6: Get root endpoint
+GET {{local}}
+GET {{production}}
+
+### Test 7: Get API docs
+GET {{local}}api-docs
+GET {{production}}api-docs
