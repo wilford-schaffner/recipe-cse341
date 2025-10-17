@@ -22,7 +22,10 @@ async function startServer() {
     await initDb();
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
-      console.log(`Swagger documentation available at http://localhost:${PORT}/api-docs`);
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://recipe-cse341.onrender.com' 
+        : `http://localhost:${PORT}`;
+      console.log(`Swagger documentation available at ${baseUrl}/api-docs`);
     });
   } catch (err) {
     console.error('Failed to start server:', err);

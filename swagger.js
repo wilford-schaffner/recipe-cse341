@@ -6,8 +6,8 @@ const doc = {
     description: 'API for managing recipes',
     version: '1.0.0',
   },
-  host: 'localhost:3000',
-  schemes: ['http'],
+  host: process.env.HOST || (process.env.NODE_ENV === 'production' ? 'recipe-cse341.onrender.com' : 'localhost:3000'),
+  schemes: [process.env.NODE_ENV === 'production' ? 'https' : 'http'],
   basePath: '/',
   definitions: {
     Recipe: {
