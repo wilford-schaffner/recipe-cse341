@@ -12,7 +12,7 @@
       "url": "https://opensource.org/licenses/MIT"
     }
   },
-  "host": "localhost:3000",
+  "host": "cse-341-ctje.onrender.com",
   "basePath": "/",
   "tags": [
     {
@@ -21,7 +21,7 @@
     }
   ],
   "schemes": [
-    "http"
+    "https"
   ],
   "paths": {
     "/": {
