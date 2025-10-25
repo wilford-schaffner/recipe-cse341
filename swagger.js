@@ -14,7 +14,7 @@ const doc = {
     }
   },
   host: process.env.HOST || 'recipe-cse341.onrender.com' || 'localhost:3000',
-  schemes: [process.env.NODE_ENV === 'production' ? 'https' : 'http'],
+  schemes: ['https', 'http'],
   basePath: '/',
   tags: [
     {
