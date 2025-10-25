@@ -8,13 +8,39 @@ const ingredientSchema = Joi.object({
     'string.max': 'Ingredient item must not exceed 100 characters',
     'any.required': 'Ingredient item is required'
   }),
-  quantity: Joi.string().required().min(1).max(50).messages({
+  quantity: Joi.string().required().min(1).max(50).custom((value, helpers) => {
+    // Check if quantity is only whitespace
+    const trimmed = value.trim();
+    if (trimmed.length === 0) {
+      return helpers.error('quantity.whitespace');
+    }
+    
+    // Reject if starts with negative sign
+    if (trimmed.startsWith('-')) {
+      return helpers.error('quantity.negative');
+    }
+    
+    // Reject if it's just "0" or "0.0" etc.
+    if (/^0+(\.0+)?\s*$/.test(trimmed)) {
+      return helpers.error('quantity.zero');
+    }
+    
+    // Reject if it starts with "0 " (like "0 cups")
+    if (/^0\s/.test(trimmed)) {
+      return helpers.error('quantity.zero');
+    }
+    
+    return value;
+  }).messages({
     'string.empty': 'Ingredient quantity is required',
     'string.min': 'Ingredient quantity must be at least 1 character',
     'string.max': 'Ingredient quantity must not exceed 50 characters',
+    'quantity.whitespace': 'Ingredient quantity cannot be only whitespace',
+    'quantity.negative': 'Ingredient quantity cannot be negative',
+    'quantity.zero': 'Ingredient quantity must be greater than zero',
     'any.required': 'Ingredient quantity is required'
   }),
-  notes: Joi.string().optional().max(200).messages({
+  notes: Joi.string().optional().allow('').max(200).messages({
     'string.max': 'Ingredient notes must not exceed 200 characters'
   }),
   optional: Joi.boolean().optional()
@@ -22,10 +48,17 @@ const ingredientSchema = Joi.object({
 
 // Main recipe schema for validation
 const recipeSchema = Joi.object({
-  name: Joi.string().required().min(3).max(200).messages({
+  name: Joi.string().required().min(3).max(200).custom((value, helpers) => {
+    // Check if name is only whitespace
+    if (value.trim().length === 0) {
+      return helpers.error('name.whitespace');
+    }
+    return value;
+  }).messages({
     'string.empty': 'Recipe name is required',
     'string.min': 'Recipe name must be at least 3 characters',
     'string.max': 'Recipe name must not exceed 200 characters',
+    'name.whitespace': 'Recipe name cannot be only whitespace',
     'any.required': 'Recipe name is required'
   }),
   servings: Joi.number().required().integer().min(1).max(100).messages({
@@ -53,9 +86,16 @@ const recipeSchema = Joi.object({
     'any.required': 'Ingredients list is required'
   }),
   steps: Joi.array().required().min(1).items(
-    Joi.string().min(3).max(1000).messages({
+    Joi.string().min(3).max(1000).custom((value, helpers) => {
+      // Check if step is only whitespace
+      if (value.trim().length === 0) {
+        return helpers.error('step.whitespace');
+      }
+      return value;
+    }).messages({
       'string.min': 'Each step must be at least 3 characters',
-      'string.max': 'Each step must not exceed 1000 characters'
+      'string.max': 'Each step must not exceed 1000 characters',
+      'step.whitespace': 'Each step cannot be only whitespace'
     })
   ).messages({
     'array.min': 'At least one cooking step is required',
@@ -75,6 +115,16 @@ const validateRecipe = (req, res, next) => {
     return res.status(400).json({
       error: 'Validation failed',
       details: errorMessages
+    });
+  }
+  
+  // Clean up empty notes fields
+  if (value.ingredients && Array.isArray(value.ingredients)) {
+    value.ingredients = value.ingredients.map(ingredient => {
+      if (ingredient.notes === '') {
+        delete ingredient.notes;
+      }
+      return ingredient;
     });
   }
   

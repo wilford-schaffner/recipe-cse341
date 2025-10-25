@@ -33,7 +33,9 @@ const doc = {
         },
         name: {
           type: 'string',
-          description: 'Recipe name',
+          description: 'Recipe name (3-200 characters, cannot be only whitespace)',
+          minLength: 3,
+          maxLength: 200,
           example: 'Chocolate Chip Cookies'
         },
         servings: {
@@ -67,7 +69,7 @@ const doc = {
         },
         steps: {
           type: 'array',
-          description: 'Cooking instructions',
+          description: 'Cooking instructions (each step 3-1000 characters, cannot be only whitespace)',
           minItems: 1,
           items: {
             type: 'string',
@@ -84,17 +86,22 @@ const doc = {
       properties: {
         item: {
           type: 'string',
-          description: 'Ingredient name',
+          description: 'Ingredient name (1-100 characters)',
+          minLength: 1,
+          maxLength: 100,
           example: 'flour'
         },
         quantity: {
           type: 'string',
-          description: 'Ingredient quantity',
+          description: 'Ingredient quantity (1-50 characters, must be positive, cannot be zero, negative, or only whitespace)',
+          minLength: 1,
+          maxLength: 50,
           example: '2 cups'
         },
         notes: {
           type: 'string',
-          description: 'Additional notes',
+          description: 'Additional notes (optional, max 200 characters, empty strings are automatically removed)',
+          maxLength: 200,
           example: 'sifted'
         },
         optional: {

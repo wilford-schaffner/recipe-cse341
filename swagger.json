@@ -12,7 +12,7 @@
       "url": "https://opensource.org/licenses/MIT"
     }
   },
-  "host": "recipe-cse341.onrender.com",
+  "host": "localhost:3000",
   "basePath": "/",
   "tags": [
     {
@@ -21,7 +21,7 @@
     }
   ],
   "schemes": [
-    "https"
+    "http"
   ],
   "paths": {
     "/": {
@@ -197,7 +197,15 @@
                 },
                 "description": {
                   "type": "string",
-                  "example": "Recipe name"
+                  "example": "Recipe name (3-200 characters, cannot be only whitespace)"
+                },
+                "minLength": {
+                  "type": "number",
+                  "example": 3
+                },
+                "maxLength": {
+                  "type": "number",
+                  "example": 200
                 },
                 "example": {
                   "type": "string",
@@ -309,7 +317,7 @@
                 },
                 "description": {
                   "type": "string",
-                  "example": "Cooking instructions"
+                  "example": "Cooking instructions (each step 3-1000 characters, cannot be only whitespace)"
                 },
                 "minItems": {
                   "type": "number",
@@ -381,7 +389,15 @@
                 },
                 "description": {
                   "type": "string",
-                  "example": "Ingredient name"
+                  "example": "Ingredient name (1-100 characters)"
+                },
+                "minLength": {
+                  "type": "number",
+                  "example": 1
+                },
+                "maxLength": {
+                  "type": "number",
+                  "example": 100
                 },
                 "example": {
                   "type": "string",
@@ -398,7 +414,15 @@
                 },
                 "description": {
                   "type": "string",
-                  "example": "Ingredient quantity"
+                  "example": "Ingredient quantity (1-50 characters, must be positive, cannot be zero, negative, or only whitespace)"
+                },
+                "minLength": {
+                  "type": "number",
+                  "example": 1
+                },
+                "maxLength": {
+                  "type": "number",
+                  "example": 50
                 },
                 "example": {
                   "type": "string",
@@ -415,7 +439,11 @@
                 },
                 "description": {
                   "type": "string",
-                  "example": "Additional notes"
+                  "example": "Additional notes (optional, max 200 characters, empty strings are automatically removed)"
+                },
+                "maxLength": {
+                  "type": "number",
+                  "example": 200
                 },
                 "example": {
                   "type": "string",
