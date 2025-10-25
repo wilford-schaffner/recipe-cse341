@@ -13,7 +13,7 @@ const doc = {
       url: 'https://opensource.org/licenses/MIT'
     }
   },
-  host: process.env.HOST || (process.env.NODE_ENV === 'production' ? 'recipe-cse341.onrender.com' : 'localhost:3000'),
+  host: process.env.HOST || 'recipe-cse341.onrender.com' || 'localhost:3000',
   schemes: [process.env.NODE_ENV === 'production' ? 'https' : 'http'],
   basePath: '/',
   tags: [

@@ -12,7 +12,7 @@
       "url": "https://opensource.org/licenses/MIT"
     }
   },
-  "host": "localhost:3000",
+  "host": "recipe-cse341.onrender.com",
   "basePath": "/",
   "tags": [
     {
