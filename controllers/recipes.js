@@ -8,7 +8,11 @@ const getAllRecipes = async (req, res) => {
     const recipes = await db.collection('Recipes').find().toArray();
     res.status(200).json(recipes);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch recipes' });
+    console.error('Error fetching recipes:', err);
+    res.status(500).json({ 
+      error: 'Failed to fetch recipes',
+      message: 'An unexpected error occurred while retrieving recipes'
+    });
   }
 };
 
@@ -18,11 +22,18 @@ const getRecipeById = async (req, res) => {
     const db = getDb();
     const recipe = await db.collection('Recipes').findOne({ _id: new ObjectId(req.params.id) });
     if (!recipe) {
-      return res.status(404).json({ error: 'Recipe not found' });
+      return res.status(404).json({ 
+        error: 'Recipe not found',
+        message: 'No recipe found with the provided ID'
+      });
     }
     res.status(200).json(recipe);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch recipe' });
+    console.error('Error fetching recipe:', err);
+    res.status(500).json({ 
+      error: 'Failed to fetch recipe',
+      message: 'An unexpected error occurred while retrieving the recipe'
+    });
   }
 };
 
@@ -34,7 +45,11 @@ const createRecipe = async (req, res) => {
     const newRecipe = await db.collection('Recipes').findOne({ _id: result.insertedId });
     res.status(201).json(newRecipe);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to create recipe' });
+    console.error('Error creating recipe:', err);
+    res.status(500).json({ 
+      error: 'Failed to create recipe',
+      message: 'An unexpected error occurred while creating the recipe'
+    });
   }
 };
 
@@ -47,12 +62,18 @@ const updateRecipe = async (req, res) => {
       { $set: req.body }
     );
     if (result.matchedCount === 0) {
-      return res.status(404).json({ error: 'Recipe not found' });
+      return res.status(404).json({ 
+        error: 'Recipe not found',
+        message: 'No recipe found with the provided ID'
+      });
     }
-    const updatedRecipe = await db.collection('Recipes').findOne({ _id: new ObjectId(req.params.id) });
-    res.status(200).json(updatedRecipe);
+    res.status(204).send();
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update recipe' });
+    console.error('Error updating recipe:', err);
+    res.status(500).json({ 
+      error: 'Failed to update recipe',
+      message: 'An unexpected error occurred while updating the recipe'
+    });
   }
 };
 
@@ -62,11 +83,18 @@ const deleteRecipe = async (req, res) => {
     const db = getDb();
     const result = await db.collection('Recipes').deleteOne({ _id: new ObjectId(req.params.id) });
     if (result.deletedCount === 0) {
-      return res.status(404).json({ error: 'Recipe not found' });
+      return res.status(404).json({ 
+        error: 'Recipe not found',
+        message: 'No recipe found with the provided ID'
+      });
     }
-    res.status(200).json({ message: 'Recipe deleted successfully' });
+    res.status(204).send();
   } catch (err) {
-    res.status(500).json({ error: 'Failed to delete recipe' });
+    console.error('Error deleting recipe:', err);
+    res.status(500).json({ 
+      error: 'Failed to delete recipe',
+      message: 'An unexpected error occurred while deleting the recipe'
+    });
   }
 };
 

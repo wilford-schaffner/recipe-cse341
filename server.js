@@ -14,6 +14,9 @@ app.use(express.json());
 app.use('/', routes);
 
 // Swagger documentation
+app.get('/swagger.json', (req, res) => {
+  res.json(swaggerDocument);
+});
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Initialize database and start server
