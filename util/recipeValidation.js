@@ -1,14 +1,17 @@
 const Joi = require('joi');
 
+// Reusable MongoDB ObjectId pattern
+const objectIdPattern = /^[0-9a-fA-F]{24}$/;
+
 // Ingredient schema for validation
 const ingredientSchema = Joi.object({
-  item: Joi.string().required().min(1).max(100).messages({
+  item: Joi.string().trim().required().min(1).max(100).messages({
     'string.empty': 'Ingredient item is required',
     'string.min': 'Ingredient item must be at least 1 character',
     'string.max': 'Ingredient item must not exceed 100 characters',
     'any.required': 'Ingredient item is required'
   }),
-  quantity: Joi.string().required().min(1).max(50).custom((value, helpers) => {
+  quantity: Joi.string().trim().required().min(1).max(50).custom((value, helpers) => {
     // Check if quantity is only whitespace
     const trimmed = value.trim();
     if (trimmed.length === 0) {
@@ -40,7 +43,7 @@ const ingredientSchema = Joi.object({
     'quantity.zero': 'Ingredient quantity must be greater than zero',
     'any.required': 'Ingredient quantity is required'
   }),
-  notes: Joi.string().optional().allow('').max(200).messages({
+  notes: Joi.string().trim().optional().allow('').max(200).messages({
     'string.max': 'Ingredient notes must not exceed 200 characters'
   }),
   optional: Joi.boolean().optional()
@@ -48,7 +51,7 @@ const ingredientSchema = Joi.object({
 
 // Main recipe schema for validation
 const recipeSchema = Joi.object({
-  name: Joi.string().required().min(3).max(200).custom((value, helpers) => {
+  name: Joi.string().trim().required().min(3).max(200).custom((value, helpers) => {
     // Check if name is only whitespace
     if (value.trim().length === 0) {
       return helpers.error('name.whitespace');
@@ -86,7 +89,7 @@ const recipeSchema = Joi.object({
     'any.required': 'Ingredients list is required'
   }),
   steps: Joi.array().required().min(1).items(
-    Joi.string().min(3).max(1000).custom((value, helpers) => {
+    Joi.string().trim().min(3).max(1000).custom((value, helpers) => {
       // Check if step is only whitespace
       if (value.trim().length === 0) {
         return helpers.error('step.whitespace');
@@ -101,14 +104,11 @@ const recipeSchema = Joi.object({
     'array.min': 'At least one cooking step is required',
     'any.required': 'Cooking steps are required'
   })
-});
+}).prefs({ abortEarly: false, stripUnknown: true });
 
 // Validation middleware function
 const validateRecipe = (req, res, next) => {
-  const { error, value } = recipeSchema.validate(req.body, { 
-    abortEarly: false,
-    stripUnknown: true 
-  });
+  const { error, value } = recipeSchema.validate(req.body);
   
   if (error) {
     const errorMessages = error.details.map(detail => detail.message);
@@ -138,7 +138,7 @@ const validateObjectId = (req, res, next) => {
   const { id } = req.params;
   
   // Check if id is a valid MongoDB ObjectId format (24 hex characters)
-  if (!/^[0-9a-fA-F]{24}$/.test(id)) {
+  if (!objectIdPattern.test(id)) {
     return res.status(400).json({
       error: 'Invalid recipe ID format',
       message: 'Recipe ID must be a valid MongoDB ObjectId'
