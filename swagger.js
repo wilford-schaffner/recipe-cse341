@@ -226,40 +226,16 @@ swaggerAutogen(outputFile, endpointsFiles, doc).then(() => {
     }
   });
   
-  // Add POST body parameter for premium-recipes
-  if (swaggerDoc.paths['/premium-recipes/'] && swaggerDoc.paths['/premium-recipes/'].post) {
-    if (!swaggerDoc.paths['/premium-recipes/'].post.parameters) {
-      swaggerDoc.paths['/premium-recipes/'].post.parameters = [];
-    }
-    const hasBodyParam = swaggerDoc.paths['/premium-recipes/'].post.parameters.some(p => p.in === 'body');
-    if (!hasBodyParam) {
-      swaggerDoc.paths['/premium-recipes/'].post.parameters.push({
-        name: 'body',
-        in: 'body',
-        required: true,
-        schema: {
-          $ref: '#/definitions/Recipe'
-        }
-      });
-    }
+  // Remove POST, PUT, and DELETE methods from premium-recipes endpoints (only GET is allowed)
+  if (swaggerDoc.paths['/premium-recipes/']) {
+    delete swaggerDoc.paths['/premium-recipes/'].post;
+    delete swaggerDoc.paths['/premium-recipes/'].put;
+    delete swaggerDoc.paths['/premium-recipes/'].delete;
   }
-  
-  // Add PUT body parameter for premium-recipes
-  if (swaggerDoc.paths['/premium-recipes/{id}'] && swaggerDoc.paths['/premium-recipes/{id}'].put) {
-    if (!swaggerDoc.paths['/premium-recipes/{id}'].put.parameters) {
-      swaggerDoc.paths['/premium-recipes/{id}'].put.parameters = [];
-    }
-    const hasBodyParam = swaggerDoc.paths['/premium-recipes/{id}'].put.parameters.some(p => p.in === 'body');
-    if (!hasBodyParam) {
-      swaggerDoc.paths['/premium-recipes/{id}'].put.parameters.push({
-        name: 'body',
-        in: 'body',
-        required: true,
-        schema: {
-          $ref: '#/definitions/Recipe'
-        }
-      });
-    }
+  if (swaggerDoc.paths['/premium-recipes/{id}']) {
+    delete swaggerDoc.paths['/premium-recipes/{id}'].post;
+    delete swaggerDoc.paths['/premium-recipes/{id}'].put;
+    delete swaggerDoc.paths['/premium-recipes/{id}'].delete;
   }
   
   // Write the corrected swagger.json
