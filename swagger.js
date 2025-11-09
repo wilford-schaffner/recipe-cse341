@@ -183,12 +183,12 @@ swaggerAutogen(outputFile, endpointsFiles, doc).then(() => {
   }
   
   // Add OAuth2 security definitions (Swagger 2.0 format)
+  // Using implicit flow for Swagger UI (browser-based, no client secret needed)
   swaggerDoc.securityDefinitions = {
     googleOAuth: {
       type: 'oauth2',
       authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
-      tokenUrl: 'https://oauth2.googleapis.com/token',
-      flow: 'authorizationCode',
+      flow: 'implicit',
       scopes: {
         'https://www.googleapis.com/auth/userinfo.profile': 'Access profile information',
         'https://www.googleapis.com/auth/userinfo.email': 'Access email address'
