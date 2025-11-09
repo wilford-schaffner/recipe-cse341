@@ -1,11 +1,33 @@
 const express = require('express');
+const session = require('express-session');
+const passport = require('passport');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 const routes = require('./routes');
 const { initDb } = require('./db/connect');
+require('dotenv').config();
+require('./config/passport');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Session configuration
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production (HTTPS)
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  })
+);
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Middleware
 app.use(express.json());
@@ -17,7 +39,23 @@ app.use('/', routes);
 app.get('/swagger.json', (req, res) => {
   res.json(swaggerDocument);
 });
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// Swagger UI with OAuth2 configuration
+const swaggerUiOptions = {
+  swaggerOptions: {
+    oauth: {
+      clientId: process.env.CLIENT,
+      realm: 'google',
+      appName: 'Recipe Manager API',
+      scopeSeparator: ' ',
+      additionalQueryStringParams: {},
+      useBasicAuthenticationWithAccessCodeGrant: false,
+      usePkceWithAuthorizationCodeGrant: false
+    }
+  }
+};
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerUiOptions));
 
 // Initialize database and start server
 async function startServer() {

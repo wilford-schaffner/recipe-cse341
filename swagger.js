@@ -20,6 +20,10 @@ const doc = {
     {
       name: 'recipes',
       description: 'Operations about recipes'
+    },
+    {
+      name: 'premium-recipes',
+      description: 'Operations about premium recipes (requires Google OAuth authentication)'
     }
   ],
   definitions: {
@@ -116,7 +120,7 @@ const doc = {
 };
 
 const outputFile = './swagger.json';
-const endpointsFiles = ['./routes/index.js', './routes/recipes.js'];
+const endpointsFiles = ['./routes/index.js', './routes/recipes.js', './routes/premiumRecipes.js'];
 
 swaggerAutogen(outputFile, endpointsFiles, doc).then(() => {
   // Post-process to add missing parameters and fix definitions
@@ -132,6 +136,18 @@ swaggerAutogen(outputFile, endpointsFiles, doc).then(() => {
   if (swaggerDoc.paths['/{id}']) {
     delete swaggerDoc.paths['/{id}'];
   }
+  
+  // Add tags to all recipe endpoints
+  const recipePaths = ['/recipes/', '/recipes/{id}'];
+  recipePaths.forEach(path => {
+    if (swaggerDoc.paths[path]) {
+      Object.keys(swaggerDoc.paths[path]).forEach(method => {
+        if (!swaggerDoc.paths[path][method].tags) {
+          swaggerDoc.paths[path][method].tags = ['recipes'];
+        }
+      });
+    }
+  });
   
   // Add POST body parameter
   if (swaggerDoc.paths['/recipes/'] && swaggerDoc.paths['/recipes/'].post) {
@@ -166,7 +182,87 @@ swaggerAutogen(outputFile, endpointsFiles, doc).then(() => {
     }
   }
   
+  // Add OAuth2 security definitions (Swagger 2.0 format)
+  swaggerDoc.securityDefinitions = {
+    googleOAuth: {
+      type: 'oauth2',
+      authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
+      tokenUrl: 'https://oauth2.googleapis.com/token',
+      flow: 'authorizationCode',
+      scopes: {
+        'https://www.googleapis.com/auth/userinfo.profile': 'Access profile information',
+        'https://www.googleapis.com/auth/userinfo.email': 'Access email address'
+      }
+    }
+  };
+  
+  // Apply security and tags to all premium-recipes endpoints
+  const premiumRecipePaths = [
+    '/premium-recipes/',
+    '/premium-recipes/{id}'
+  ];
+  
+  premiumRecipePaths.forEach(path => {
+    if (swaggerDoc.paths[path]) {
+      Object.keys(swaggerDoc.paths[path]).forEach(method => {
+        // Add tags
+        if (!swaggerDoc.paths[path][method].tags) {
+          swaggerDoc.paths[path][method].tags = ['premium-recipes'];
+        }
+        // Add security
+        if (!swaggerDoc.paths[path][method].security) {
+          swaggerDoc.paths[path][method].security = [];
+        }
+        // Add OAuth2 security requirement if not already present
+        const hasOAuth = swaggerDoc.paths[path][method].security.some(
+          sec => sec.googleOAuth !== undefined
+        );
+        if (!hasOAuth) {
+          swaggerDoc.paths[path][method].security.push({
+            googleOAuth: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']
+          });
+        }
+      });
+    }
+  });
+  
+  // Add POST body parameter for premium-recipes
+  if (swaggerDoc.paths['/premium-recipes/'] && swaggerDoc.paths['/premium-recipes/'].post) {
+    if (!swaggerDoc.paths['/premium-recipes/'].post.parameters) {
+      swaggerDoc.paths['/premium-recipes/'].post.parameters = [];
+    }
+    const hasBodyParam = swaggerDoc.paths['/premium-recipes/'].post.parameters.some(p => p.in === 'body');
+    if (!hasBodyParam) {
+      swaggerDoc.paths['/premium-recipes/'].post.parameters.push({
+        name: 'body',
+        in: 'body',
+        required: true,
+        schema: {
+          $ref: '#/definitions/Recipe'
+        }
+      });
+    }
+  }
+  
+  // Add PUT body parameter for premium-recipes
+  if (swaggerDoc.paths['/premium-recipes/{id}'] && swaggerDoc.paths['/premium-recipes/{id}'].put) {
+    if (!swaggerDoc.paths['/premium-recipes/{id}'].put.parameters) {
+      swaggerDoc.paths['/premium-recipes/{id}'].put.parameters = [];
+    }
+    const hasBodyParam = swaggerDoc.paths['/premium-recipes/{id}'].put.parameters.some(p => p.in === 'body');
+    if (!hasBodyParam) {
+      swaggerDoc.paths['/premium-recipes/{id}'].put.parameters.push({
+        name: 'body',
+        in: 'body',
+        required: true,
+        schema: {
+          $ref: '#/definitions/Recipe'
+        }
+      });
+    }
+  }
+  
   // Write the corrected swagger.json
   fs.writeFileSync(outputFile, JSON.stringify(swaggerDoc, null, 2));
-  console.log('Swagger documentation generated successfully with clean definitions');
+  console.log('Swagger documentation generated successfully with clean definitions and OAuth2 security');
 });

@@ -18,6 +18,10 @@
     {
       "name": "recipes",
       "description": "Operations about recipes"
+    },
+    {
+      "name": "premium-recipes",
+      "description": "Operations about premium recipes (requires Google OAuth authentication)"
     }
   ],
   "schemes": [
@@ -32,8 +36,8 @@
           "200": {
             "description": "OK"
           },
-          "500": {
-            "description": "Internal Server Error"
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
@@ -44,11 +48,11 @@
         "responses": {
           "200": {
             "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
-        }
+        },
+        "tags": [
+          "recipes"
+        ]
       },
       "post": {
         "description": "",
@@ -58,11 +62,11 @@
           },
           "400": {
             "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         },
+        "tags": [
+          "recipes"
+        ],
         "parameters": [
           {
             "name": "body",
@@ -95,11 +99,11 @@
           },
           "404": {
             "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
-        }
+        },
+        "tags": [
+          "recipes"
+        ]
       },
       "put": {
         "description": "",
@@ -128,11 +132,11 @@
           },
           "404": {
             "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
-        }
+        },
+        "tags": [
+          "recipes"
+        ]
       },
       "delete": {
         "description": "",
@@ -153,11 +157,218 @@
           },
           "404": {
             "description": "Not Found"
-          },
+          }
+        },
+        "tags": [
+          "recipes"
+        ]
+      }
+    },
+    "/auth/google": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/auth/google/callback": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "description": "",
+        "responses": {
           "500": {
             "description": "Internal Server Error"
           }
         }
+      }
+    },
+    "/premium-recipes/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "premium-recipes"
+        ],
+        "security": [
+          {
+            "googleOAuth": [
+              "https://www.googleapis.com/auth/userinfo.profile",
+              "https://www.googleapis.com/auth/userinfo.email"
+            ]
+          }
+        ]
+      },
+      "post": {
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "premium-recipes"
+        ],
+        "security": [
+          {
+            "googleOAuth": [
+              "https://www.googleapis.com/auth/userinfo.profile",
+              "https://www.googleapis.com/auth/userinfo.email"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Recipe"
+            }
+          }
+        ]
+      }
+    },
+    "/premium-recipes/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "tags": [
+          "premium-recipes"
+        ],
+        "security": [
+          {
+            "googleOAuth": [
+              "https://www.googleapis.com/auth/userinfo.profile",
+              "https://www.googleapis.com/auth/userinfo.email"
+            ]
+          }
+        ]
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Recipe"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "tags": [
+          "premium-recipes"
+        ],
+        "security": [
+          {
+            "googleOAuth": [
+              "https://www.googleapis.com/auth/userinfo.profile",
+              "https://www.googleapis.com/auth/userinfo.email"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "tags": [
+          "premium-recipes"
+        ],
+        "security": [
+          {
+            "googleOAuth": [
+              "https://www.googleapis.com/auth/userinfo.profile",
+              "https://www.googleapis.com/auth/userinfo.email"
+            ]
+          }
+        ]
       }
     }
   },
@@ -481,6 +692,18 @@
             "type": "string"
           }
         }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "googleOAuth": {
+      "type": "oauth2",
+      "authorizationUrl": "https://accounts.google.com/o/oauth2/auth",
+      "tokenUrl": "https://oauth2.googleapis.com/token",
+      "flow": "authorizationCode",
+      "scopes": {
+        "https://www.googleapis.com/auth/userinfo.profile": "Access profile information",
+        "https://www.googleapis.com/auth/userinfo.email": "Access email address"
       }
     }
   }
